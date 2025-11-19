@@ -1,0 +1,7 @@
+streamlit==1.36.0
+pandas
+altair
+requests
+beautifulsoup4
+pymupdf
+scikit-learn
