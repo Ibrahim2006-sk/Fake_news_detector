@@ -1,3 +1,8 @@
+# =========================================
+# PATCH 1 — Replace your main file with app.py
+# =========================================
+Create file: app.py
+--------------------------------------------
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -15,25 +20,25 @@ from sklearn.linear_model import LogisticRegression
 st.set_page_config(page_title="Fake News Detector – Offline Ultra Pro", layout="wide")
 
 st.title("📰 Fake News Detector – Offline Ultra Pro Version")
-st.write("This version works **100% offline**. No HuggingFace model, no internet downloads.")
+st.write("This version runs **100% offline**. No HuggingFace, no tokens, no downloads.")
 
 # ==========================================
 # SAMPLE TRAINING DATA (LOCAL MODEL)
 # ==========================================
 fake_samples = [
-    "Government confirms aliens landed on earth yesterday.",
+    "Government confirms aliens landed yesterday.",
     "Scientists discover immortality drug.",
     "Breaking news: celebrity cloned secretly.",
-    "NASA reveals world ending next month in secret document.",
-    "Actor replaced by AI clone in upcoming movie.",
+    "NASA reveals world ending next month.",
+    "Actor replaced by AI clone in movie.",
 ]
 
 real_samples = [
-    "Prime Minister announces new economic reforms.",
-    "RBI releases latest monetary policy update.",
+    "Prime Minister announces economic reforms.",
+    "RBI releases monetary policy update.",
     "India launches new satellite successfully.",
-    "WHO reports improvement in global vaccination coverage.",
-    "Government releases education sector report for 2024.",
+    "WHO reports improvement in vaccination coverage.",
+    "Government releases education sector report.",
 ]
 
 X_train = fake_samples + real_samples
@@ -54,16 +59,13 @@ def clean(text):
     text = text.translate(str.maketrans("", "", string.punctuation))
     return text
 
-
 def predict(text):
     vec = vectorizer.transform([clean(text)])
     proba = model.predict_proba(vec)[0]
     return float(proba[0]), float(proba[1])  # fake, real
 
-
 def split_sentences(text):
     return re.split(r"(?<=[.!?]) +", text)
-
 
 def extract_text_from_url(url):
     try:
@@ -73,7 +75,6 @@ def extract_text_from_url(url):
         return "\n".join([p.text for p in paras])
     except:
         return None
-
 
 def extract_text_from_pdf(pdf_file):
     try:
@@ -85,12 +86,10 @@ def extract_text_from_pdf(pdf_file):
     except:
         return None
 
-
 def heat_color(prob):
     r = int(prob * 255)
     g = int((1 - prob) * 200)
     return f"rgb({r},{g},80)"
-
 
 # ==========================================
 # INPUT TABS
@@ -122,7 +121,6 @@ with tab3:
         else:
             st.error("PDF extraction failed.")
 
-
 # ==========================================
 # ANALYZE BUTTON
 # ==========================================
@@ -146,12 +144,12 @@ if st.button("🚀 Run Offline Fake News Analysis"):
             st.success(f"✅ Real News Likely ({credibility:.2f}% credible)")
 
     with col2:
-        st.subheader("Credibility Gauge")
+        st.subheader("Credibility Meter")
         color = "green" if credibility > 70 else "orange" if credibility > 40 else "red"
         st.markdown(
             f"""
-            <div style='padding:20px;background:{color};color:white;
-                text-align:center;font-size:26px;border-radius:10px;'>
+            <div style='padding:20px;background:{color};
+            color:white;text-align:center;font-size:26px;border-radius:10px;'>
                 {credibility:.2f}% Credible
             </div>
             """,
@@ -163,14 +161,14 @@ if st.button("🚀 Run Offline Fake News Analysis"):
     # SENTENCE ANALYSIS
     st.subheader("Sentence-Level Fake Probability")
     sentences = split_sentences(text)
-    results = []
+    rows = []
 
     for s in sentences:
         if s.strip():
             fs, rs = predict(s)
-            results.append({"sentence": s, "fake": fs, "real": rs})
+            rows.append({"sentence": s, "fake": fs, "real": rs})
 
-    df = pd.DataFrame(results)
+    df = pd.DataFrame(rows)
 
     # Heatmap
     for _, row in df.iterrows():
@@ -203,3 +201,43 @@ if st.button("🚀 Run Offline Fake News Analysis"):
 
     st.subheader("Full Article Text")
     st.write(text_input)
+
+
+# FOOTER
+st.markdown("---")
+st.caption("Offline Ultra Pro Fake News Detector | Streamlit + Scikit-Learn")
+--------------------------------------------
+
+# =========================================
+# PATCH 2 — Fix requirements.txt
+# =========================================
+Create/replace: requirements.txt
+--------------------------------------------
+streamlit==1.36.0
+pandas
+altair
+requests
+beautifulsoup4
+pymupdf
+scikit-learn
+--------------------------------------------
+
+# =========================================
+# PATCH 3 — Add README.md (optional)
+# =========================================
+Create file: README.md
+--------------------------------------------
+# Fake News Detector – Offline Ultra Pro
+
+This is a 100% offline Fake News Detection system powered by Streamlit + Scikit-Learn.
+
+### Features:
+- Offline TF-IDF + Logistic Regression model  
+- PDF extraction  
+- URL article extraction  
+- Sentence-level fake probability  
+- Heatmap visualization  
+- Bar chart  
+- CSV download  
+
+### Run Locally:
